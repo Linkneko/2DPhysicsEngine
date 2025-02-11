@@ -36,9 +36,9 @@ namespace FlatPhysics
         private readonly FlatVector[] vertices;
 
         private FlatVector[] transformedVertices;
-
+        private FlatAABB aabb;
         private bool transformUpdateRequired;
-
+        private bool aabbUpdteRequired;
 
         public readonly ShapeType ShapeType;
 
@@ -99,6 +99,7 @@ namespace FlatPhysics
             }
 
             this.transformUpdateRequired = true;
+            this.aabbUpdteRequired = false;
         }
 
         private static FlatVector[] CreateBoxVertices(float width, float height)
@@ -131,7 +132,8 @@ namespace FlatPhysics
                 }
             }
 
-            this.transformUpdateRequired = false;
+            this.transformUpdateRequired = true;
+            this.aabbUpdteRequired = true;
             return this.transformedVertices;
         }
 
@@ -149,9 +151,47 @@ namespace FlatPhysics
 
             this.force = FlatVector.Zero;
             this.transformUpdateRequired = true;
+            this.aabbUpdteRequired = true;
 
         }
 
+        public FlatAABB GetAABB()
+        {
+            if(this.aabbUpdteRequired)
+            {
+                float minX = float.MaxValue;
+                float minY = float.MaxValue;
+                float maxX = float.MinValue;
+                float maxY = float.MinValue;
+                if (this.ShapeType is ShapeType.Box)
+                {
+                    FlatVector[] vertices = this.GetTransformedVertices();
+                    for (int i = 0; i < vertices.Length; i++)
+                    {
+                        FlatVector v = vertices[i];
+                        if (v.x < minX) minX = v.x;
+                        if (v.x > maxX) maxX = v.x;
+                        if (v.y < minY) minY = v.y;
+                        if (v.y > maxY) maxY = v.y;
+                    }
+
+                }else if(this.ShapeType is ShapeType.Circle)
+                {
+                    minX = position.x - Radius;
+                    minY = position.y - Radius;
+                    maxX = position.x + Radius;
+                    maxY = position.y + Radius;
+                }
+            
+                else
+                {
+                    throw new System.Exception("Invalid ShapeType");
+                }
+                this.aabb = new FlatAABB(minX, minY, maxX, maxY);
+            }
+            this.aabbUpdteRequired = false;
+            return this.aabb;
+        }
         public void Move(FlatVector amount)
         {
             this.position += amount;

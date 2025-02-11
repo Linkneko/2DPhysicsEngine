@@ -132,7 +132,7 @@ public class test : MonoBehaviour
 
         }
 
-        Vector3 worldpos = Camera.main.ScreenToWorldPoint(new Vector3(width, height, Zdepth));
+        Vector3 worldpos = Camera.main.ScreenToWorldPoint(new Vector3(width+5f*depth, height + 5f*depth, Zdepth));
 
         /*for (int i = 0; i < world.BodyCount; i++)
         {
@@ -145,7 +145,20 @@ public class test : MonoBehaviour
             if(body.Position.y < -worldpos.y){body.MoveTo(new FlatVector(body.Position.x, worldpos.y));}
             if(body.Position.y > worldpos.y){body.MoveTo(new FlatVector(body.Position.x, -worldpos.y));}
         }*/
-
+        for (int i = 0; i < world.BodyCount; i++)
+        {
+            if (!world.GetBody(i, out body))
+            {
+            }
+            FlatAABB aabb = body.GetAABB();
+            if (aabb.Min.x < -worldpos.x || aabb.Max.x > worldpos.x || aabb.Min.y < -worldpos.y || aabb.Max.y > worldpos.y)
+            {
+                Debug.Log("Body out of screen");
+                world.RemoveBody(body);
+                FlatDraw.RemoveBody(body);
+            }
+            
+        }
         world.Step(Time.deltaTime);
     }
 }
