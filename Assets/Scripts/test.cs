@@ -82,7 +82,7 @@ public class test : MonoBehaviour
                 }
             }
         }
-
+        
         float dx = 0f, dy = 0f;
         float speed = 10f;
         if (Input.GetKey(KeyCode.A)){dx = -1;}
