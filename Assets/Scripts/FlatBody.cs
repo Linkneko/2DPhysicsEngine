@@ -136,10 +136,13 @@ namespace FlatPhysics
         }
 
 
-        internal void Step(float time)
+        internal void Step(float time, FlatVector gravity)
         {
-
+            if(this.IsStatic)
+                return;
             this.linearVelocity += force * InvMass * time;
+            linearVelocity += gravity * time;
+
             this.position += this.linearVelocity * time;
 
             this.rotation += this.rotationalVelocity * time;

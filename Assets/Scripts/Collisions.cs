@@ -64,20 +64,7 @@ namespace FlatPhysics
             }
             return true;
         }
-        private static FlatVector FindArithmeticMean(FlatVector[] vertices)
-        {
-            float sumX = 0f;
-            float sumY = 0f;
 
-            for (int i = 0; i < vertices.Length; i++)
-            {
-                FlatVector v = vertices[i];
-                sumX += v.x;
-                sumY += v.y;
-            }
-
-            return new FlatVector(sumX / (float)vertices.Length, sumY / (float)vertices.Length);
-        }
 
         private static int FindClosestVertex(FlatVector[] vertices, FlatVector center)
         {
@@ -98,7 +85,8 @@ namespace FlatPhysics
         }
 
 
-        public static bool IntersectPolygonPolygon(FlatVector[] verticesA, FlatVector[] verticesB,
+        public static bool IntersectPolygonPolygon(FlatVector[] verticesA, 
+                FlatVector[] verticesB, FlatVector centerA, FlatVector centerB,
                 out FlatVector normal, out float depth)
         {
             normal = FlatVector.Zero;
@@ -154,8 +142,7 @@ namespace FlatPhysics
 
                 }
             }
-            FlatVector centerA = FindArithmeticMean(verticesA);
-            FlatVector centerB = FindArithmeticMean(verticesB);
+
             FlatVector direction = centerB - centerA;
 
             if (FlatMath.Dot(direction, normal) < 0f)

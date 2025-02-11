@@ -48,7 +48,7 @@ namespace FlatPhysics
             for (int i = 0; i < bodyList.Count; i++)
             {
                 bodyList[i].isColliding = false;
-                bodyList[i].Step(deltaTime);
+                bodyList[i].Step(deltaTime, gravity);
             }
 
 
@@ -123,7 +123,7 @@ namespace FlatPhysics
                 }
                 else if(bodyB.ShapeType == ShapeType.Box)
                 {
-                    return Collisions.IntersectPolygonPolygon(bodyA.GetTransformedVertices(), bodyB.GetTransformedVertices(), out normal, out depth);
+                    return Collisions.IntersectPolygonPolygon(bodyA.GetTransformedVertices(), bodyB.GetTransformedVertices(),bodyA.Position ,bodyB.Position, out normal, out depth);
                 }
             }
 

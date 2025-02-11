@@ -6,7 +6,6 @@ using UnityEngine;
 public class test : MonoBehaviour
 {
     FlatWorld world;
-    int bodyCount = 10;
     float width = Screen.width;
     float height = Screen.height;
     
@@ -16,6 +15,25 @@ public class test : MonoBehaviour
         world = new FlatWorld();
         float depth = width * 0.02f;
 
+        Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(width, height, Zdepth));
+        if (!FlatBody.CreateBoxBody(worldPosition.x * 2 - 1f, .5f, new FlatVector(0, -worldPosition.y*0.8f), 0, true, 0.5f, out FlatBody ground, out string error))
+        {
+            throw new System.Exception(error);
+        }
+        ground.color = Color.white;
+        world.AddBody(ground);
+
+
+
+
+
+
+
+
+
+
+
+#if false
         for (int i = 0; i < bodyCount; i++)
         {
             FlatBody body = null;
@@ -46,9 +64,8 @@ public class test : MonoBehaviour
             }
 
             world.AddBody(body);
-
-
         }
+#endif
     }
     void Draw()
     {
@@ -71,6 +88,31 @@ public class test : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        float depth = width * 0.02f;
+        FlatBody body = null;
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 MousePosition = Input.mousePosition;
+            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(MousePosition.x, MousePosition.y, Zdepth));
+
+            
+            if (!FlatBody.CreateCircleBody(.5f, new FlatVector(worldPosition.x, worldPosition.y), 2f, false, 0.5f, out body, out string error))
+            {
+                throw new System.Exception(error);
+            }
+            world.AddBody(body);
+        }
+        if (Input.GetMouseButtonDown(1))
+        {
+            Vector3 MousePosition = Input.mousePosition;
+            Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(MousePosition.x, MousePosition.y, Zdepth));
+
+            if (!FlatBody.CreateBoxBody(.885f, .885f, new FlatVector(worldPosition.x, worldPosition.y), 2f, false, 0.5f, out body, out string error))
+            {
+                throw new System.Exception(error);
+            }
+            world.AddBody(body);
+        }
         Draw();
 
         
@@ -80,7 +122,7 @@ public class test : MonoBehaviour
         if (Input.GetKey(KeyCode.D)){dx = 1;}
         if (Input.GetKey(KeyCode.W)){dy = 1;}
         if (Input.GetKey(KeyCode.S)){dy = -1;}
-        FlatBody body = null;
+        body = null;
         if (world.GetBody(0, out body))
         {
             body.AddForce(new FlatVector(dx * speed, dy * speed));
@@ -92,7 +134,7 @@ public class test : MonoBehaviour
 
         Vector3 worldpos = Camera.main.ScreenToWorldPoint(new Vector3(width, height, Zdepth));
 
-        for (int i = 0; i < world.BodyCount; i++)
+        /*for (int i = 0; i < world.BodyCount; i++)
         {
             if (!world.GetBody(i, out body))
             {
@@ -102,7 +144,7 @@ public class test : MonoBehaviour
             if(body.Position.x > worldpos.x){body.MoveTo(new FlatVector(-worldpos.x, body.Position.y));}
             if(body.Position.y < -worldpos.y){body.MoveTo(new FlatVector(body.Position.x, worldpos.y));}
             if(body.Position.y > worldpos.y){body.MoveTo(new FlatVector(body.Position.x, -worldpos.y));}
-        }
+        }*/
 
         world.Step(Time.deltaTime);
     }
