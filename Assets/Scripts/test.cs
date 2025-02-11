@@ -65,8 +65,12 @@ public class test : MonoBehaviour
     void Update()
     {
         Draw();
+        for (int i = 0; i < bodyList.Count; i++)
+        {
+            bodyList[i].isColliding = false;
+        }
 
-        for(int i = 0; i < bodyList.Count; i++)
+        for (int i = 0; i < bodyList.Count; i++)
         {
             FlatBody bodyA = bodyList[i];
             for(int j = i + 1; j < bodyList.Count; j++)
