@@ -149,10 +149,10 @@ namespace FlatPhysics
         }
 
 
-        internal void Step(float time, FlatVector gravity)
+        internal void Step(float time)
         {
 
-            this.linearVelocity += gravity * time;
+            this.linearVelocity += force / Mass * time;
             this.position += this.linearVelocity * time;
 
             this.rotation += this.rotationalVelocity * time;

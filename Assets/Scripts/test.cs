@@ -5,19 +5,21 @@ using UnityEngine;
 
 public class test : MonoBehaviour
 {
-    List<FlatBody> bodyList;
+    FlatWorld world;
+    int bodyCount = 10;
+
     void Start()
     {
+        world = new FlatWorld();
         float width = Screen.width;
         float height = Screen.height;
         float depth = width * 0.02f;
         float Zdepth = 5f;
-        int bodyCount = 10;
-        bodyList = new List<FlatBody>(10);
+
         for (int i = 0; i < bodyCount; i++)
         {
             FlatBody body = null;
-            int type = Random.Range(1, 2);
+            int type = Random.Range(0, 2);
             float x = Random.Range(depth, width - depth);
             float y = Random.Range(depth, height - depth);
             // 将坐标转换到屏幕空间
@@ -41,23 +43,26 @@ public class test : MonoBehaviour
                 throw new System.Exception("Invalid shape type");
             }
 
-            bodyList.Add(body);
+            world.AddBody(body);
 
 
         }
     }
     void Draw()
     {
-        for(int i = 0; i < bodyList.Count; i++)
+        for(int i = 0; i < world.BodyCount; i++)
         {
-            FlatBody body = bodyList[i];
-            if(body.ShapeType == ShapeType.Circle)
+            FlatBody body = null;
+            if(world.GetBody(i, out body))
             {
-                FlatDraw.DrawCircle(body);
-            }
-            else if(body.ShapeType == ShapeType.Box)
-            {
-                FlatDraw.DrawBox(body);
+                if (body.ShapeType == ShapeType.Circle)
+                {
+                    FlatDraw.DrawCircle(body);
+                }
+                else if (body.ShapeType == ShapeType.Box)
+                {
+                    FlatDraw.DrawBox(body);
+                }
             }
         }
     }
@@ -65,27 +70,7 @@ public class test : MonoBehaviour
     void Update()
     {
         Draw();
-        for (int i = 0; i < bodyList.Count; i++)
-        {
-            bodyList[i].isColliding = false;
-        }
 
-        for (int i = 0; i < bodyList.Count; i++)
-        {
-            FlatBody bodyA = bodyList[i];
-            for(int j = i + 1; j < bodyList.Count; j++)
-            {
-                FlatBody bodyB = bodyList[j];
-                if(Collisions.IntersectPolygonPolygon(bodyA.GetTransformedVertices(),
-                    bodyB.GetTransformedVertices(), out FlatVector normal, out float depth))
-                {
-                        bodyA.isColliding = true;
-                        bodyB.isColliding = true;
-                    bodyA.Move(-normal * depth * 0.5f);
-                    bodyB.Move(normal * depth * 0.5f);
-                }
-            }
-        }
         
         float dx = 0f, dy = 0f;
         float speed = 10f;
@@ -93,10 +78,15 @@ public class test : MonoBehaviour
         if (Input.GetKey(KeyCode.D)){dx = 1;}
         if (Input.GetKey(KeyCode.W)){dy = 1;}
         if (Input.GetKey(KeyCode.S)){dy = -1;}
-
-        bodyList[0].Move(new FlatVector(dx * speed * Time.deltaTime, dy * speed * Time.deltaTime));
+        FlatBody body = null;
+        if (world.GetBody(0, out body))
+        {
+            body.Move(new FlatVector(dx * speed * Time.deltaTime, dy * speed * Time.deltaTime));
 
         if (Input.GetKey(KeyCode.R))
-            bodyList[0].Rotate(Mathf.PI * .5f * Time.deltaTime);
+                body.Rotate(Mathf.PI * .5f * Time.deltaTime);
+
+        }
+        world.Step(Time.deltaTime);
     }
 }
