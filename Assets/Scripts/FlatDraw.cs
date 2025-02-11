@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Drawing;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEngine.Rendering.HableCurve;
 
@@ -30,7 +31,8 @@ namespace FlatPhysics
             lr.endWidth = lineWidth;
             lr.loop = true;
             lr.material = new Material(Shader.Find("Sprites/Default"));
-
+            lr.startColor = body.color;
+            lr.endColor = body.color;
             UpdateBoxPosition(lr, body);
         }
 
@@ -56,16 +58,14 @@ namespace FlatPhysics
             lr.endWidth = lineWidth;
             lr.loop = true;
             lr.material = new Material(Shader.Find("Sprites/Default"));
-            
+            lr.startColor = body.color;
+            lr.endColor = body.color;
 
             // 第一次创建时设置位置
             UpdateCirclePosition(lr, body);
         }
         private static void UpdateBoxPosition(LineRenderer lr, FlatBody body)
         {
-            UnityEngine.Color color = body.isColliding? UnityEngine.Color.red : body.color;
-            lr.startColor = color;
-            lr.endColor = color;
             float zDistance = 5f;
             FlatVector[] vertices = body.GetTransformedVertices();
             lr.positionCount = 4;
@@ -77,9 +77,6 @@ namespace FlatPhysics
         }
         private static void UpdateCirclePosition(LineRenderer lr, FlatBody body)
         {
-            UnityEngine.Color color = body.isColliding ? UnityEngine.Color.red : body.color;
-            lr.startColor = color;
-            lr.endColor = color;
             
             float zDistance = 5f;
 

@@ -34,7 +34,7 @@ namespace FlatPhysics
         public readonly float Height;
 
         private readonly FlatVector[] vertices;
-        public readonly int[] Triangles;
+
         private FlatVector[] transformedVertices;
 
         private bool transformUpdateRequired;
@@ -60,7 +60,7 @@ namespace FlatPhysics
             this.linearVelocity = FlatVector.Zero;
             this.rotation = 0f;
             this.rotationalVelocity = 0f;
-            color = new Color(
+            color = isStatic? Color.red : new Color(
                 Random.Range(0.6f, 1f),
                 Random.Range(0.6f, 1f),
                 Random.Range(0.6f, 1f)
@@ -90,13 +90,11 @@ namespace FlatPhysics
             if (this.ShapeType is ShapeType.Box)
             {
                 this.vertices = FlatBody.CreateBoxVertices(this.Width, this.Height);
-                this.Triangles = FlatBody.CreateBoxTriangles();
                 this.transformedVertices = new FlatVector[this.vertices.Length];
             }
             else
             {
                 this.vertices = null;
-                Triangles = null;
                 this.transformedVertices = null;
             }
 
@@ -119,17 +117,6 @@ namespace FlatPhysics
             return vertices;
         }
 
-        private static int[] CreateBoxTriangles()
-        {
-            int[] triangles = new int[6];
-            triangles[0] = 0;
-            triangles[1] = 1;
-            triangles[2] = 2;
-            triangles[3] = 0;
-            triangles[4] = 2;
-            triangles[5] = 3;
-            return triangles;
-        }
 
         public FlatVector[] GetTransformedVertices()
         {
@@ -152,7 +139,7 @@ namespace FlatPhysics
         internal void Step(float time)
         {
 
-            this.linearVelocity += force / Mass * time;
+            this.linearVelocity += force * InvMass * time;
             this.position += this.linearVelocity * time;
 
             this.rotation += this.rotationalVelocity * time;

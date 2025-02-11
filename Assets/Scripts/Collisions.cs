@@ -24,7 +24,7 @@ namespace FlatPhysics
 
                 ProjectVertices(vertices, axis, out minA, out maxA);
                 ProjectCirlce(center, radius, axis, out minB, out maxB);
-                if (maxA < minB || maxB < minA)//û н   
+                if (maxA < minB || maxB < minA)  
                 {
                     return false;
                 }
@@ -42,9 +42,10 @@ namespace FlatPhysics
             int cpIndex = FindClosestVertex(vertices, center);
             FlatVector cp = vertices[cpIndex];
             FlatVector axis1 = FlatMath.Normalize(cp - center);
+
             ProjectVertices(vertices, axis1, out minA, out maxA);
             ProjectCirlce(center, radius, axis1, out minB, out maxB);
-            if (maxA < minB || maxB < minA)//û н   
+            if (maxA < minB || maxB < minA)  
             {
                 return false;
             }
@@ -115,7 +116,7 @@ namespace FlatPhysics
 
                 ProjectVertices(verticesA, axis, out float minA, out float maxA);
                 ProjectVertices(verticesB, axis, out float minB, out float maxB);
-                if (maxA < minB || maxB < minA)//û н   
+                if (maxA < minB || maxB < minA)  
                 {
                     return false;
                 }
@@ -231,7 +232,7 @@ namespace FlatPhysics
                 return false;
             }
 
-            normal = FlatMath.Normalize(centerB - centerA);
+            normal = FlatMath.Normalize(centerB - centerA);//A->B
             depth = radiiSum - distance;
             return true;
         }

@@ -59,16 +59,44 @@ namespace FlatPhysics
                 for (int j = i + 1; j < bodyList.Count; j++)
                 {
                     FlatBody bodyB = bodyList[j];
+                    if(bodyA.IsStatic && bodyB.IsStatic)
+                        continue;
+
                     if(Collide(bodyA, bodyB, out FlatVector normal, out float depth))
                     {
-                        bodyA.Move(-normal * depth * 0.5f);
-                        bodyB.Move(normal * depth * 0.5f);
+                        if (bodyA.IsStatic)
+                        {
+                            bodyB.Move(normal * depth * 1f);
+                        }
+                        else if (bodyB.IsStatic)
+                        {
+                            bodyA.Move(-normal * depth * 1f);
+                        }
+                        else
+                        {
+                            bodyA.Move(-normal * depth * 0.5f);
+                            bodyB.Move(normal * depth * 0.5f);
+                        }//Move 作为位置修正，和运动学无关
                         bodyA.isColliding = true;
                         bodyB.isColliding = true;
+
+                        ResolveCollision(bodyA, bodyB, normal, depth);//计算冲量
                     }
                 }
 
             }
+        }
+
+        public void ResolveCollision(FlatBody bodyA, FlatBody bodyB, FlatVector normal, float depth)
+        {
+            FlatVector relativeVelocity = bodyB.LinearVelocity - bodyA.LinearVelocity;
+            if(FlatMath.Dot(relativeVelocity, normal) > 0)//如果b的速度比a的速度慢，则不发生碰撞
+                return;
+
+            float e = Mathf.Min(bodyA.Restitution, bodyB.Restitution);
+            float j = -(1 + e) * FlatMath.Dot(relativeVelocity, normal) / (bodyA.InvMass + bodyB.InvMass);
+            bodyA.LinearVelocity -= j * bodyA.InvMass * normal;
+            bodyB.LinearVelocity += j * bodyB.InvMass * normal;
         }
         private bool Collide(FlatBody bodyA, FlatBody bodyB, out FlatVector normal, out float depth)
         {
