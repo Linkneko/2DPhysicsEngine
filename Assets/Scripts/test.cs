@@ -1,6 +1,7 @@
 using FlatPhysics;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 public class test : MonoBehaviour
@@ -153,12 +154,18 @@ public class test : MonoBehaviour
             FlatAABB aabb = body.GetAABB();
             if (aabb.Min.x < -worldpos.x || aabb.Max.x > worldpos.x || aabb.Min.y < -worldpos.y || aabb.Max.y > worldpos.y)
             {
-                Debug.Log("Body out of screen");
                 world.RemoveBody(body);
                 FlatDraw.RemoveBody(body);
             }
             
         }
-        world.Step(Time.deltaTime);
+        Stopwatch sw = new Stopwatch();
+        sw.Start();
+        world.Step(Time.deltaTime, 10);
+        sw.Stop();
+        if(Input.GetKey(KeyCode.Space))
+        {
+            UnityEngine.Debug.Log("Step time: " + sw.Elapsed.TotalMilliseconds + "ms");
+        }
     }
 }

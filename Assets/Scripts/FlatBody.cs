@@ -132,16 +132,16 @@ namespace FlatPhysics
                 }
             }
 
-            this.transformUpdateRequired = true;
-            this.aabbUpdteRequired = true;
+            this.transformUpdateRequired = false;
             return this.transformedVertices;
         }
 
 
-        internal void Step(float time, FlatVector gravity)
+        internal void Step(float time, FlatVector gravity, int iterations)
         {
             if(this.IsStatic)
                 return;
+            time /= iterations;
             this.linearVelocity += force * InvMass * time;
             linearVelocity += gravity * time;
 
