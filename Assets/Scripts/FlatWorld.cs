@@ -53,7 +53,7 @@ namespace FlatPhysics
             contactPointsList.Clear();
             for (int iter = 0; iter < iteration; iter++)
             {
-            //Movement Step
+                //Movement Step
                 for (int i = 0; i < bodyList.Count; i++)
                 {
                     bodyList[i].isColliding = false;
@@ -65,9 +65,15 @@ namespace FlatPhysics
                 for (int i = 0; i < bodyList.Count; i++)
                 {
                     FlatBody bodyA = bodyList[i];
+                    FlatAABB aabbA = bodyA.GetAABB();
                     for (int j = i + 1; j < bodyList.Count; j++)
                     {
                         FlatBody bodyB = bodyList[j];
+                        FlatAABB aabbB = bodyB.GetAABB();
+                        if (!Collisions.IntersectsAABBs(aabbA, aabbB) &&!bodyA.IsStatic &&!bodyB.IsStatic)
+                        { 
+                            continue;
+                        }
                         if(bodyA.IsStatic && bodyB.IsStatic)
                             continue;
 

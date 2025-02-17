@@ -6,6 +6,13 @@ namespace FlatPhysics
 {
     public static class Collisions
     {
+        public static bool IntersectsAABBs(FlatAABB aabbA, FlatAABB aabbB)
+        {
+            if(aabbA.Max.x < aabbB.Min.x || aabbB.Max.x < aabbA.Min.x || aabbA.Max.y < aabbB.Min.y || aabbB.Max.y < aabbA.Min.y)
+                return false;
+            return true;
+        
+        }
         public static bool Collide(FlatBody bodyA, FlatBody bodyB, out FlatVector normal, out float depth)
         {
             normal = FlatVector.Zero;
