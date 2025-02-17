@@ -2,20 +2,24 @@ using FlatPhysics;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+
 using UnityEngine;
+using UnityEngine.UI;
 
 public class test : MonoBehaviour
 {
     FlatWorld world;
     float width = Screen.width;
     float height = Screen.height;
-    
+    public Text myText;
     float Zdepth = 5f;
+    private float timer = 0f;
+    Stopwatch sw = new Stopwatch();
+    List<FlatVector> contactList;
     void Start()
     {
         world = new FlatWorld();
         float depth = width * 0.02f;
-
         Vector3 worldPosition = Camera.main.ScreenToWorldPoint(new Vector3(width, height, Zdepth));
         if (!FlatBody.CreateBoxBody(worldPosition.x * 2 - 1f, .5f, new FlatVector(0, -worldPosition.y*0.8f), 0, true, 0.5f, out FlatBody ground, out string error))
         {
@@ -24,16 +28,8 @@ public class test : MonoBehaviour
         ground.color = Color.white;
         world.AddBody(ground);
 
-
-
-
-
-
-
-
-
-
-
+        contactList = world?.contactPointsList;
+        StartCoroutine(UpdateStepTime());
 #if false
         for (int i = 0; i < bodyCount; i++)
         {
@@ -91,6 +87,7 @@ public class test : MonoBehaviour
     {
         float depth = width * 0.02f;
         FlatBody body = null;
+        
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 MousePosition = Input.mousePosition;
@@ -116,36 +113,9 @@ public class test : MonoBehaviour
         }
         Draw();
 
-        
-        float dx = 0f, dy = 0f;
-        float speed = 10f;
-        if (Input.GetKey(KeyCode.A)){dx = -1;}
-        if (Input.GetKey(KeyCode.D)){dx = 1;}
-        if (Input.GetKey(KeyCode.W)){dy = 1;}
-        if (Input.GetKey(KeyCode.S)){dy = -1;}
-        body = null;
-        if (world.GetBody(0, out body))
-        {
-            body.AddForce(new FlatVector(dx * speed, dy * speed));
-
-        if (Input.GetKey(KeyCode.R))
-                body.Rotate(Mathf.PI * .5f * Time.deltaTime);
-
-        }
 
         Vector3 worldpos = Camera.main.ScreenToWorldPoint(new Vector3(width+5f*depth, height + 5f*depth, Zdepth));
 
-        /*for (int i = 0; i < world.BodyCount; i++)
-        {
-            if (!world.GetBody(i, out body))
-            {
-                
-            }
-            if(body.Position.x < -worldpos.x){body.MoveTo(new FlatVector(worldpos.x, body.Position.y));}
-            if(body.Position.x > worldpos.x){body.MoveTo(new FlatVector(-worldpos.x, body.Position.y));}
-            if(body.Position.y < -worldpos.y){body.MoveTo(new FlatVector(body.Position.x, worldpos.y));}
-            if(body.Position.y > worldpos.y){body.MoveTo(new FlatVector(body.Position.x, -worldpos.y));}
-        }*/
         for (int i = 0; i < world.BodyCount; i++)
         {
             if (!world.GetBody(i, out body))
@@ -159,13 +129,23 @@ public class test : MonoBehaviour
             }
             
         }
-        Stopwatch sw = new Stopwatch();
+
         sw.Start();
         world.Step(Time.deltaTime, 10);
         sw.Stop();
-        if(Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space))
         {
             UnityEngine.Debug.Log("Step time: " + sw.Elapsed.TotalMilliseconds + "ms");
+        }
+    }
+    IEnumerator UpdateStepTime()
+    {
+        while (true)
+        {
+            myText.text = "Body Count: " + world.BodyCount;
+            myText.text += "\nStep time: " + sw.Elapsed.TotalMilliseconds.ToString("F2") + "ms";
+            sw.Reset();
+            yield return new WaitForSeconds(.2f);
         }
     }
 }

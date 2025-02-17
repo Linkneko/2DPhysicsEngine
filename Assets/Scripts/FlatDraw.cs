@@ -35,7 +35,6 @@ namespace FlatPhysics
             lr.endColor = body.color;
             UpdateBoxPosition(lr, body);
         }
-
         public static void DrawCircle(FlatBody body)
         {
             // 如果已存在，直接更新位置
